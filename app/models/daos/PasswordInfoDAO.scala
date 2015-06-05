@@ -31,9 +31,10 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    */
   def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
 
-    implicit val jsonFormat = Json.format[PasswordInfo]
+    //implicit val jsonFormat = Json.format[PasswordInfo]
 
-    //println("***PasswordInfoDAO***")
+    println("***loginInfo***" + loginInfo)
+    println("***authInfo***" + authInfo)
     //collection.insert(authInfo)
 
     data += (loginInfo -> authInfo)

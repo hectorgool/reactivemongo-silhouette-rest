@@ -43,6 +43,7 @@ class SignUpController @Inject() (
     request.body.validate[SignUpForm.Data].map { data =>
 
       val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
+
       userService.retrieve(loginInfo).flatMap {
 
         case Some(user) =>
@@ -51,10 +52,6 @@ class SignUpController @Inject() (
         case None =>
 
           val authInfo = passwordHasher.hash(data.password)
-
-          println("\ndata.password:" + data.password)
-          println("\nauthInfo:" + authInfo)
-          println("\nloginInfo:" + loginInfo)
 
           val user = User(
             userID = UUID.randomUUID(),
