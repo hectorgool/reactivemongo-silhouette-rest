@@ -49,8 +49,12 @@ class SignUpController @Inject() (
           Future.successful(BadRequest(Json.obj("message" -> Messages("user.exists"))))
 
         case None =>
-          println("None")
+
           val authInfo = passwordHasher.hash(data.password)
+
+          println("\ndata.password:" + data.password)
+          println("\nauthInfo:" + authInfo)
+          println("\nloginInfo:" + loginInfo)
 
           val user = User(
             userID = UUID.randomUUID(),

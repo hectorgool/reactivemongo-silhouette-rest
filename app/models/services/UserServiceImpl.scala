@@ -35,9 +35,8 @@ class UserServiceImpl @Inject() (userDAO: UserDAO) extends UserService {
    */
   def save(user: User) = {
 
-    //println("\n\n*** UserServiceImpl.save ***\n\n")
-
     userDAO.save(user)
+    
   }
 
   /**

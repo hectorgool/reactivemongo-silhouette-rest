@@ -3,9 +3,11 @@ Sign-up
 
 curl -X POST http://localhost:9000/signUp  -H 'Content-Type: application/json' -d '
 {
-    "firstName": "FIRSTNAME",
-    "lastName":  "LASTNAME",
-    "email":     "email@email.com",
+    "firstName": "Rodolfo",
+    "lastName":  "Gunzman",
+    "email":     "santo@santo.com",
     "password": "asdfasdf"
 }
 ' -v
+
+

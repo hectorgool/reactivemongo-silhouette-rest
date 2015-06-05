@@ -8,11 +8,20 @@ import models.daos.PasswordInfoDAO._
 import scala.collection.mutable
 import scala.concurrent.Future
 
+import play.api.Play.current
+import play.modules.reactivemongo._
+import play.modules.reactivemongo.json.collection.JSONCollection
+
+import play.api.libs.json.Json
+
 /**
  * The DAO to store the password information.
  */
 class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
 
+
+  def db = ReactiveMongoPlugin.db
+  def collection: JSONCollection = db.collection[JSONCollection]("PasswordInfo")
   /**
    * Saves the password info.
    *
@@ -21,8 +30,15 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    * @return The saved password info.
    */
   def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+
+    implicit val jsonFormat = Json.format[PasswordInfo]
+
+    //println("***PasswordInfoDAO***")
+    //collection.insert(authInfo)
+
     data += (loginInfo -> authInfo)
     Future.successful(authInfo)
+
   }
 
   /**
