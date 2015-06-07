@@ -22,6 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
  */
 class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
 
+
   def db = ReactiveMongoPlugin.db
   def collection: JSONCollection = db.collection[JSONCollection]("LoginInfoPasswordInfo")
 
@@ -39,9 +40,11 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
         "providerID" -> loginInfo.providerID,
         "providerKey" -> loginInfo.providerKey
       ),
-      "hasher" -> authInfo.hasher,
-      "password" -> authInfo.password,
-      "salt" -> authInfo.salt
+      "authInfo" -> Json.obj(
+        "hasher" -> authInfo.hasher,
+        "password" -> authInfo.password,
+        "salt" -> authInfo.salt
+      )
     )
 
     collection.insert(json)
@@ -56,14 +59,17 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    * @return The retrieved password info or None if no password info could be retrieved for the given login info.
    */
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
-    println("\n\n***** PasswordInfoDAO.find: " + loginInfo + "\n\n")
 
     val query = Json.obj( "loginInfo" -> loginInfo )
-    val filter = Json.obj( "password" -> 1 )
+    val filter = Json.obj( "authInfo" -> 1 )
 
-    collection.find( query ).one[LoginInfoPasswordInfo]
+    collection.find( query, filter ).one[LoginInfoPasswordInfo] 
+
     Future.successful(data.get(loginInfo))
+
   }
+
+
 }
 
 /**

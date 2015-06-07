@@ -4,6 +4,7 @@ import java.util.UUID
 
 import com.mohiva.play.silhouette.api.{ LoginInfo }
 import play.api.libs.json.Json
+import models._
 
 /**
  * The user object.
@@ -19,9 +20,8 @@ import play.api.libs.json.Json
 case class LoginInfoPasswordInfo(
 
 	loginInfo: LoginInfo,
-  	hasher: String,
-	password: String,
-    salt: Option[String]
+	passwordInfo: PasswordInfo
+	
 )
 
 /**
@@ -32,7 +32,7 @@ object LoginInfoPasswordInfo {
   /**
    * Converts the [User] object to Json and vice versa.
    */
-  implicit val jsonFormat = Json.format[LoginInfoPasswordInfo]
-
+  implicit val jsonFormat1 = Json.format[LoginInfoPasswordInfo]
 
 }
+
