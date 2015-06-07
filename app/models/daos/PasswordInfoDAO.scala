@@ -16,7 +16,6 @@ import models._
 import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
 /**
  * The DAO to store the password information.
  */
@@ -61,9 +60,13 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
 
     val query = Json.obj( "loginInfo" -> loginInfo )
-    val filter = Json.obj( "authInfo" -> 1 )
 
-    collection.find( query, filter ).one[LoginInfoPasswordInfo] 
+    collection.find( query ).one[LoginInfoPasswordInfo].flatMap {
+      case None => 
+        Future.successful(Option.empty[LoginInfoPasswordInfo])
+      case Some(fullDoc) => 
+        Future(Some(fullDoc.getAsTry[LoginInfoPasswordInfo]("authInfo").get))
+    }
 
     Future.successful(data.get(loginInfo))
 
