@@ -15,8 +15,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import play.api.Play.current
 import play.modules.reactivemongo._
+import reactivemongo.bson._
 import play.modules.reactivemongo.json.collection.JSONCollection
 
+import lib._
 
 /**
  * Give access to the user object.

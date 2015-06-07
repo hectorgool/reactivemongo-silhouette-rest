@@ -10,18 +10,21 @@ import scala.concurrent.Future
 
 import play.api.Play.current
 import play.modules.reactivemongo._
+import reactivemongo.bson._
 import play.modules.reactivemongo.json.collection.JSONCollection
+import models._
+import play.api.libs.json._
+import scala.concurrent.ExecutionContext.Implicits.global
 
-import play.api.libs.json.Json
 
 /**
  * The DAO to store the password information.
  */
 class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
 
-
   def db = ReactiveMongoPlugin.db
-  def collection: JSONCollection = db.collection[JSONCollection]("PasswordInfo")
+  def collection: JSONCollection = db.collection[JSONCollection]("LoginInfoPasswordInfo")
+
   /**
    * Saves the password info.
    *
@@ -31,15 +34,19 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    */
   def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
 
-    //implicit val jsonFormat = Json.format[PasswordInfo]
+    val json = Json.obj(
+      "loginInfo" -> Json.obj(
+        "providerID" -> loginInfo.providerID,
+        "providerKey" -> loginInfo.providerKey
+      ),
+      "hasher" -> authInfo.hasher,
+      "password" -> authInfo.password,
+      "salt" -> authInfo.salt
+    )
 
-    println("***loginInfo***" + loginInfo)
-    println("***authInfo***" + authInfo)
-    //collection.insert(authInfo)
-
+    collection.insert(json)
     data += (loginInfo -> authInfo)
     Future.successful(authInfo)
-
   }
 
   /**
@@ -49,6 +56,12 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    * @return The retrieved password info or None if no password info could be retrieved for the given login info.
    */
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
+    println("\n\n***** PasswordInfoDAO.find: " + loginInfo + "\n\n")
+
+    val query = Json.obj( "loginInfo" -> loginInfo )
+    val filter = Json.obj( "password" -> 1 )
+
+    collection.find( query ).one[LoginInfoPasswordInfo]
     Future.successful(data.get(loginInfo))
   }
 }

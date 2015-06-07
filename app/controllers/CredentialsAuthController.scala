@@ -45,26 +45,43 @@ class CredentialsAuthController @Inject() (
    * @return The result to display.
    */
   def authenticate = Action.async(parse.json) { implicit request =>
+
     request.body.validate[Credentials].map { credentials =>
       (env.providers.get(CredentialsProvider.ID) match {
-        case Some(p: CredentialsProvider) => p.authenticate(credentials)
-        case _ => Future.failed(new ConfigurationException(s"Cannot find credentials provider"))
+
+        case Some(p: CredentialsProvider) => 
+          println("ok1")
+          p.authenticate(credentials)
+        case _ => 
+          Future.failed(new ConfigurationException(s"Cannot find credentials provider"))
+
       }).flatMap { loginInfo =>
+
+        println("ok3")
+
         userService.retrieve(loginInfo).flatMap {
-          case Some(user) => env.authenticatorService.create(user.loginInfo).flatMap { authenticator =>
-            env.eventBus.publish(LoginEvent(user, request, request2lang))
-            env.authenticatorService.init(authenticator).map { token =>
-              Ok(Json.obj("token" -> token))
+
+          case Some(user) => 
+            env.authenticatorService.create( user.loginInfo ).flatMap { authenticator =>
+              env.eventBus.publish( LoginEvent( user, request, request2lang ) )
+              env.authenticatorService.init( authenticator ).map { token =>
+                Ok( Json.obj( "token" -> token ) )
+              }
             }
-          }
-          case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
+
+          case None => 
+            Future.failed(new IdentityNotFoundException("Couldn't find user"))
+
         }
       }.recover {
-        case e: ProviderException => Unauthorized(Json.obj("message" -> Messages("invalid.credentials")))
+        case e: ProviderException => Unauthorized(Json.obj("message" -> Messages("1 invalid.credentials")))
       }
     }.recoverTotal {
       case error =>
-        Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.credentials"))))
+        Future.successful(Unauthorized(Json.obj("message" -> Messages("2 invalid.credentials"))))
     }
+
   }
+
+
 }

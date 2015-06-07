@@ -3,11 +3,19 @@ Sign-up
 
 curl -X POST http://localhost:9000/signUp  -H 'Content-Type: application/json' -d '
 {
-    "firstName": "Rodolfo",
-    "lastName":  "Gunzman",
-    "email":     "santo@santo.com",
+    "firstName": "FIRSTNAME",
+    "lastName":  "LASTNAME",
+    "email":     "email@email.com",
     "password": "asdfasdf"
 }
 ' -v
 
 
+curl -X POST http://localhost:9000/signin -H 'Content-Type: application/json' -d '
+{
+	"email": "email@email.com", 
+	"password": "asdfasdf"
+}
+' -v
+
+authInfo: PasswordInfo(bcrypt,$2a$10$01IZxFZac3WEfLiW/vkn5.MXKj.DVh16E5C0qiGzEnE6McOZ9g5a2,None)

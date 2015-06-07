@@ -1,5 +1,6 @@
 package controllers
 
+
 import java.util.UUID
 import javax.inject.Inject
 
@@ -15,7 +16,6 @@ import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 import play.api.mvc.Action
-
 import scala.concurrent.Future
 
 /**
@@ -43,7 +43,6 @@ class SignUpController @Inject() (
     request.body.validate[SignUpForm.Data].map { data =>
 
       val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
-
       userService.retrieve(loginInfo).flatMap {
 
         case Some(user) =>

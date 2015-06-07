@@ -2,8 +2,8 @@
 
 #GET         /user                            @controllers.ApplicationController.user
 #GET         /signOut                         @controllers.ApplicationController.signOut
-#POST        /signIn                          @controllers.CredentialsAuthController.authenticate
-POST        /signUp                           @controllers.SignUpController.signUp
+POST         /signin                          @controllers.CredentialsAuthController.authenticate
+POST         /signUp                          @controllers.SignUpController.signUp
 #GET         /authenticate/:provider          @controllers.SocialAuthController.authenticate(provider)
 #POST        /authenticate/:provider          @controllers.SocialAuthController.authenticate(provider)
 

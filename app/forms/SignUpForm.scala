@@ -1,7 +1,6 @@
 package forms
 
-import play.api.data.Form
-import play.api.data.Forms._
+
 import play.api.libs.json.Json
 
 /**
@@ -9,17 +8,6 @@ import play.api.libs.json.Json
  */
 object SignUpForm {
 
-  /**
-   * A play framework form.
-   */
-  val form = Form(
-    mapping(
-      "firstName" -> nonEmptyText,
-      "lastName" -> nonEmptyText,
-      "email" -> email,
-      "password" -> nonEmptyText
-    )(Data.apply)(Data.unapply)
-  )
 
   /**
    * The form data.
@@ -45,4 +33,6 @@ object SignUpForm {
      */
     implicit val jsonFormat = Json.format[Data]
   }
+
+
 }
