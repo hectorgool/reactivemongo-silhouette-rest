@@ -10,11 +10,15 @@ import scala.concurrent.Future
 
 import play.api.Play.current
 import play.modules.reactivemongo._
-import reactivemongo.bson._
 import play.modules.reactivemongo.json.collection.JSONCollection
 import models._
 import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
+
+import reactivemongo.bson._
+import reactivemongo.api.collections.default._
+import reactivemongo.bson.BSONDocument._
+
 
 /**
  * The DAO to store the password information.
@@ -59,14 +63,25 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    */
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
 
-    val query = Json.obj( "loginInfo" -> loginInfo )
+    val collection = db[BSONCollection]("LoginInfoPasswordInfo")
 
-    collection.find( query ).one[LoginInfoPasswordInfo].flatMap {
+    val query = BSONDocument( 
+      "loginInfo" -> BSONDocument(
+        "loginInfo" -> loginInfo.providerID,
+        "loginInfo" -> loginInfo.providerKey
+      )
+    )
+
+    val passwordInfo: Future[Option[LoginInfoPasswordInfo]] = collection.find( query ).one[LoginInfoPasswordInfo]
+
+    /*
+    passwordInfo.flatMap {
       case None => 
         Future.successful(Option.empty[LoginInfoPasswordInfo])
       case Some(fullDoc) => 
         Future(Some(fullDoc.getAsTry[LoginInfoPasswordInfo]("authInfo").get))
     }
+    */
 
     Future.successful(data.get(loginInfo))
 
@@ -84,4 +99,6 @@ object PasswordInfoDAO {
    * The data store for the password info.
    */
   var data: mutable.HashMap[LoginInfo, PasswordInfo] = mutable.HashMap()
+
+
 }

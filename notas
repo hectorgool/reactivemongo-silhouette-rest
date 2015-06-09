@@ -19,3 +19,34 @@ curl -X POST http://localhost:9000/signin -H 'Content-Type: application/json' -d
 ' -v
 
 authInfo: PasswordInfo(bcrypt,$2a$10$01IZxFZac3WEfLiW/vkn5.MXKj.DVh16E5C0qiGzEnE6McOZ9g5a2,None)
+
+
+case class LoginInfo(providerID: String, providerKey: String)
+
+
+{
+	"_id" : ObjectId("557701996189dbcd25bdf5bc"),
+	"loginInfo" : {
+		"providerID" : "credentials",
+		"providerKey" : "email@email.com"
+	},
+	"authInfo" : {
+		"hasher" : "bcrypt",
+		"password" : "$2a$10$ZCoc3.paIzEjmw20dpULjufDeOIbRKD0SEsMw84c6WJa3N3r/7ek.",
+		"salt" : null
+	}
+}
+
+
+
+
+  	/*
+  	implicit object LoginInfoPasswordInfoBSONWriter extends BSONDocumentWriter[LoginInfoPasswordInfo] {
+    	def write(loginInfoPasswordInfo: LoginInfoPasswordInfo): BSONDocument = {
+      		BSONDocument(
+        		"_id" -> loginInfoPasswordInfo.id.getOrElse(BSONObjectID.generate),
+        		"name" -> loginInfoPasswordInfo.nickName
+      		)
+      	}	
+  	}
+  	*/
