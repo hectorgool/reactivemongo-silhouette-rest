@@ -50,3 +50,10 @@ case class LoginInfo(providerID: String, providerKey: String)
       	}	
   	}
   	*/
+
+http://stackoverflow.com/questions/24070336/reactivemongo-could-not-find-implicit-value-for-parameter-reader
+
+
+PasswordInfo
+
+https://github.com/mohiva/play-silhouette/blob/master/silhouette/app/com/mohiva/play/silhouette/api/util/PasswordHasher.scala

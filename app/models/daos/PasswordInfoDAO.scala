@@ -18,6 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import reactivemongo.bson._
 import reactivemongo.api.collections.default._
 import reactivemongo.bson.BSONDocument._
+import reactivemongo.bson.Macros
 
 
 /**
@@ -27,7 +28,7 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
 
 
   def db = ReactiveMongoPlugin.db
-  def collection: JSONCollection = db.collection[JSONCollection]("LoginInfoPasswordInfo")
+  def collection: JSONCollection = db.collection[JSONCollection]("PasswordInfo")
 
   /**
    * Saves the password info.
@@ -61,9 +62,10 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    * @param loginInfo The linked login info.
    * @return The retrieved password info or None if no password info could be retrieved for the given login info.
    */
-  def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
+  def find(loginInfo: LoginInfo) = {
 
-    val collection = db[BSONCollection]("LoginInfoPasswordInfo")
+    implicit val userFormat = Macros.handler[PasswordInfo]
+    val collection = db[BSONCollection]("PasswordInfo")
 
     val query = BSONDocument( 
       "loginInfo" -> BSONDocument(
@@ -72,18 +74,16 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
       )
     )
 
-    val passwordInfo: Future[Option[LoginInfoPasswordInfo]] = collection.find( query ).one[LoginInfoPasswordInfo]
+    val passwordInfo: Future[Option[PasswordInfo]] = collection.find( query ).one[PasswordInfo]
 
-    /*
     passwordInfo.flatMap {
       case None => 
-        Future.successful(Option.empty[LoginInfoPasswordInfo])
+        Future.successful(Option.empty[PasswordInfo])
       case Some(fullDoc) => 
-        Future(Some(fullDoc.getAsTry[LoginInfoPasswordInfo]("authInfo").get))
+        Future(Some(fullDoc.getAsTry[BSONString]("authInfo").get))
     }
-    */
 
-    Future.successful(data.get(loginInfo))
+    //Future.successful(data.get(loginInfo))
 
   }
 
