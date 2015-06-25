@@ -1,7 +1,7 @@
 
 Sign-up
 
-curl -X POST http://localhost:9000/signUp  -H 'Content-Type: application/json' -d '
+curl -X POST http://localhost:9000/signup  -H 'Content-Type: application/json' -d '
 {
     "firstName": "FIRSTNAME",
     "lastName":  "LASTNAME",
@@ -10,6 +10,59 @@ curl -X POST http://localhost:9000/signUp  -H 'Content-Type: application/json' -
 }
 ' -v
 
+##########################################################################################
+
+* Hostname was NOT found in DNS cache
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 9000 (#0)
+> POST /signUp HTTP/1.1
+> User-Agent: curl/7.35.0
+> Host: localhost:9000
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 127
+> 
+* upload completely sent off: 127 out of 127 bytes
+< HTTP/1.1 200 OK
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 719
+< 
+* Connection #0 to host localhost left intact
+{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmOWY1NDA1MGEzMzk1MTA4NmUyYjBlMzBlNzA5ZmY4OGVlY2JkOWJkYjhmMDczOWI2YmQ2N2JiMjUwMDQ5MTg2NmIzNWFlMzhlYTg4Y2Y1MmIzN2Q1ZGY4MDBjOTU5OWZhOTNiMDUzYzVjMmE5ODI2NzNmZmUzYWI3NDAzN2VkZSIsImlzcyI6InBsYXktYW5ndWxhci1zaWxob3VldHRlIiwiZXhwIjoxNDM1Mjg3NjQ3LCJpYXQiOjE0MzUyNDQ0NDcsImp0aSI6Ijg0MTdmMDNhZGYzODI5MGU1NDk0MzM5YmVjNGM2ZTU2NzBlODRlNGJiZWZkYzZlMzg4Yzk5OGE3MTVkMTYyNWVkNjRjM2Q1YWE3Zjk3ZTdhOTBlZTA2YjQyZTY2NDU2ODUwNTQ5NDcyODllMjc0NDkwNzdlZDA0ZmFhNzEyOWYzN2Q4ZjM0Y2EyMzgyNGE2NGYxZDcwY2EzNDM3NmNjYzVlYzE2ODM2OTBiYWZhMmFhMjA5MzVlMDgwZTk2M2YzM2VjNGFjMWUzNThlZDg3N2FkMTkzNTllNjdjYjM4ZmI4YTI2YTBiODYyMmJhMmEzNTFkMWVmYmVjNTNhMGFmODkifQ.cOhJTIXqTV35Ixg1k-E9Lk3Lc_xQWetkiBEeKJY3r9c"}
+
+##########################################################################################
+
+> show collections
+PasswordInfo
+system.indexes
+user
+> db.user.find().pretty()
+{
+  "_id" : ObjectId("558c179fd6ce3fa9de2ae9fc"),
+  "userID" : "26e935ef-f21d-4bf4-8bba-1b873da7ead7",
+  "loginInfo" : {
+    "providerID" : "credentials",
+    "providerKey" : "email@email.com"
+  },
+  "firstName" : "FIRSTNAME",
+  "lastName" : "LASTNAME",
+  "email" : "email@email.com"
+}
+> db.PasswordInfo.find().pretty()
+{
+  "_id" : ObjectId("558c17a0d6ce3fa9de2ae9fd"),
+  "loginInfo" : {
+    "providerID" : "credentials",
+    "providerKey" : "email@email.com"
+  },
+  "authInfo" : {
+    "hasher" : "bcrypt",
+    "password" : "$2a$10$BQN80C8NTUE5lp/uv/7YFuwUDHoOOdWq0LYryMOOhz0VrFv66XnVy",
+    "salt" : null
+  }
+}
+
+##########################################################################################
 
 curl -X POST http://localhost:9000/signin -H 'Content-Type: application/json' -d '
 {
@@ -17,6 +70,75 @@ curl -X POST http://localhost:9000/signin -H 'Content-Type: application/json' -d
 	"password": "asdfasdf"
 }
 ' -v
+
+##########################################################################################
+
+* Hostname was NOT found in DNS cache
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 9000 (#0)
+> POST /signin HTTP/1.1
+> User-Agent: curl/7.35.0
+> Host: localhost:9000
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 57
+> 
+* upload completely sent off: 57 out of 57 bytes
+< HTTP/1.1 401 Unauthorized
+< Content-Type: application/json; charset=utf-8
+< Content-Length: 35
+< 
+* Connection #0 to host localhost left intact
+{"message":"1 invalid.credentials"}
+
+##########################################################################################
+
+
+
+  def find(loginInfo: LoginInfo) = {
+
+    println("loginInfo.providerID :" + loginInfo.providerID + "\n")
+    println("loginInfo.providerKey :" + loginInfo.providerKey + "\n")
+
+    collection.find(Json.obj( "loginInfo" -> loginInfo )).one[PasswordInfo]
+
+    /*
+    implicit val userFormat = Macros.handler[PasswordInfo]
+    val collection = db[BSONCollection]("PasswordInfo")
+
+    val query = BSONDocument( 
+      "loginInfo" -> BSONDocument(
+        "loginInfo" -> loginInfo.providerID,
+        "loginInfo" -> loginInfo.providerKey
+      )
+    )
+
+    val passwordInfo: Future[Option[PasswordInfo]] = collection.find( query ).one[PasswordInfo]
+
+    passwordInfo.flatMap {
+      case None => 
+        Future.successful(Option.empty[PasswordInfo])
+      case Some(fullDoc) => 
+        Future(Some(fullDoc.getAsTry[BSONString]("authInfo").get))
+    }
+    */
+
+    Future.successful(data.get(loginInfo))
+
+  }
+
+
+
+  
+
+
+
+
+https://github.com/mohiva/play-silhouette/blob/master/silhouette/app/com/mohiva/play/silhouette/api/util/Credentials.scala
+case class Credentials(identifier: String, password: String)
+
+
+
 
 authInfo: PasswordInfo(bcrypt,$2a$10$01IZxFZac3WEfLiW/vkn5.MXKj.DVh16E5C0qiGzEnE6McOZ9g5a2,None)
 

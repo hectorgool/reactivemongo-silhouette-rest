@@ -50,7 +50,8 @@ class CredentialsAuthController @Inject() (
       (env.providers.get(CredentialsProvider.ID) match {
 
         case Some(p: CredentialsProvider) => 
-          println("ok1")
+          println("ok1") //debug
+          println("credentials: " + credentials) //debug
           p.authenticate(credentials)
         case _ => 
           Future.failed(new ConfigurationException(s"Cannot find credentials provider"))

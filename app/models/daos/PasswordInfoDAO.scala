@@ -64,26 +64,12 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
    */
   def find(loginInfo: LoginInfo) = {
 
-    implicit val userFormat = Macros.handler[PasswordInfo]
-    val collection = db[BSONCollection]("PasswordInfo")
+    println("loginInfo.providerID :" + loginInfo.providerID + "\n")
+    println("loginInfo.providerKey :" + loginInfo.providerKey + "\n")
 
-    val query = BSONDocument( 
-      "loginInfo" -> BSONDocument(
-        "loginInfo" -> loginInfo.providerID,
-        "loginInfo" -> loginInfo.providerKey
-      )
-    )
+    collection.find(Json.obj( "loginInfo" -> loginInfo )).one[PasswordInfo]
 
-    val passwordInfo: Future[Option[PasswordInfo]] = collection.find( query ).one[PasswordInfo]
-
-    passwordInfo.flatMap {
-      case None => 
-        Future.successful(Option.empty[PasswordInfo])
-      case Some(fullDoc) => 
-        Future(Some(fullDoc.getAsTry[BSONString]("authInfo").get))
-    }
-
-    //Future.successful(data.get(loginInfo))
+    Future.successful(data.get(loginInfo))
 
   }
 
