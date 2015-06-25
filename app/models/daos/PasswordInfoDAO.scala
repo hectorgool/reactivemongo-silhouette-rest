@@ -19,13 +19,15 @@ import reactivemongo.bson._
 import reactivemongo.api.collections.default._
 import reactivemongo.bson.BSONDocument._
 import reactivemongo.bson.Macros
-
+import play.api.libs.json._
 
 /**
  * The DAO to store the password information.
  */
 class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
 
+
+  implicit val passwordInfoFormat = Json.format[PasswordInfo]
 
   def db = ReactiveMongoPlugin.db
   def collection: JSONCollection = db.collection[JSONCollection]("PasswordInfo")
@@ -67,9 +69,18 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] {
     println("loginInfo.providerID :" + loginInfo.providerID + "\n")
     println("loginInfo.providerKey :" + loginInfo.providerKey + "\n")
 
-    collection.find(Json.obj( "loginInfo" -> loginInfo )).one[PasswordInfo]
+    val passwordInfo: Future[Option[PasswordInfo]] = collection.find(Json.obj( "loginInfo" -> loginInfo )).one[PasswordInfo]
 
-    Future.successful(data.get(loginInfo))
+    passwordInfo.flatMap {
+      case None => 
+        println("None: ")
+        Future.successful(Option.empty[PasswordInfo])
+      case Some(fullDoc) => 
+        println("fullDoc: " + fullDoc)
+        Future( Some( fullDoc ) )
+    }
+
+    //Future.successful(data.get(loginInfo))
 
   }
 

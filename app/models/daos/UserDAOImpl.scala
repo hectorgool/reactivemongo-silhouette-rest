@@ -36,7 +36,7 @@ class UserDAOImpl extends UserDAO {
    * @return The found user or None if no user for the given login info could be found.
    */
   def find(loginInfo: LoginInfo): Future[Option[User]] = {
-    println("find 1**************")
+
     collection.find(Json.obj( "loginInfo" -> loginInfo )).one[User]
     
   }
@@ -48,7 +48,7 @@ class UserDAOImpl extends UserDAO {
    * @return The found user or None if no user for the given ID could be found.
    */
   def find(userID: UUID): Future[Option[User]] = {
-    println("find 2**************")
+
     collection.find(Json.obj( "userID" -> userID )).one[User]
 
   }
